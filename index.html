@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="小张的工作台">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FFF5F8">
+<meta name="description" content="小张的健身生活工作台">
+<link rel="manifest" href="/workbuddy/workbuddy-manifest.json">
+<link rel="apple-touch-icon" href="/workbuddy/workbuddy-icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/workbuddy/workbuddy-icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/workbuddy/workbuddy-icon-512.png">
+<title>小张的工作台</title>
+<style>
+:root {
+  --checkin: #FF6B8A;  --checkin-l: #FFF0F5;
+  --diet: #06D6A0;     --diet-l: #F0FFF8;
+  --workout: #FF8A47;  --workout-l: #FFF5F0;
+  --learn: #9B5DE5;    --learn-l: #F8F0FF;
+  --expense: #00BBF9;  --expense-l: #F0FAFF;
+  --yellow: #FFD166; --coral: #F15BB5; --lime: #B5E48C; --red: #EF476F; --blue: #4ECDC4;
+  --bg: #FFF5F8; --bg-card: #FFFFFF;
+  --t1: #1F1F2E; --t2: #7C7C8A; --t3: #B0B0BA;
+  --sh-sm: 0 2px 12px rgba(0,0,0,0.05);
+  --sh-md: 0 4px 20px rgba(0,0,0,0.08);
+  --r: 20px; --r-sm: 12px; --r-xs: 10px;
+  --ease: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  --dopa-pink: var(--checkin); --dopa-orange: var(--workout); --dopa-yellow: var(--yellow);
+  --dopa-green: var(--diet); --dopa-blue: var(--blue); --dopa-purple: var(--learn);
+  --dopa-coral: var(--coral); --dopa-teal: var(--expense); --dopa-lime: var(--lime);
+  --dopa-red: var(--red);
+  --bg-primary: var(--bg); --bg-secondary: var(--bg-card);
+  --text-primary: var(--t1); --text-secondary: var(--t2); --text-light: #FFFFFF;
+  --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
+  --transition: var(--ease);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--t1);height:100vh;overflow:hidden;display:flex;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:52px;min-width:52px;background:#FFF;
+  display:flex;flex-direction:column;align-items:center;
+  height:100vh;z-index:10;padding:16px 0;
+  border-right:1px solid #F0F0F5;
+}
+.sidebar-logo{font-size:20px;margin-bottom:24px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--checkin),var(--coral));border-radius:10px;}
+.nav-item{
+  width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;margin:3px 0;transition:var(--ease);position:relative;font-size:18px;
+  background:transparent;
+}
+.nav-item:hover{background:#F5F5FA}
+.nav-item.active{background:var(--checkin);color:white;box-shadow:0 4px 14px rgba(255,107,138,0.35)}
+.nav-item.active .nav-icon{filter:grayscale(0) brightness(10)}
+.nav-item .nav-label{display:none}
+.nav-tooltip{
+  position:absolute;left:56px;background:#1A1A2E;color:white;font-size:12px;padding:6px 12px;
+  border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s;
+  z-index:20;font-weight:500;
+}
+.nav-item:hover .nav-tooltip{opacity:1}
+
+/* ===== MAIN ===== */
+.main-canvas{
+  flex:1;overflow:auto;height:100vh;scroll-behavior:smooth;
+  padding:0;min-width:0;
+}
+
+/* ===== PANEL ===== */
+.panel{display:none;padding:24px 28px 40px;animation:fadeSlideIn .35s ease}
+.panel.active{display:block}
+.panel-inner{max-width:960px;margin:0 auto;width:100%}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== HERO ===== */
+.hero{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.hero-icon{font-size:40px;width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hero-icon.h-checkin{background:linear-gradient(135deg,var(--checkin),var(--coral))}
+.hero-icon.h-diet{background:linear-gradient(135deg,var(--diet),var(--lime))}
+.hero-icon.h-workout{background:linear-gradient(135deg,var(--workout),var(--yellow))}
+.hero-icon.h-learn{background:linear-gradient(135deg,var(--learn),var(--coral))}
+.hero-icon.h-expense{background:linear-gradient(135deg,var(--expense),var(--diet))}
+.hero-icon span{font-size:30px}
+.hero-text h1{font-size:26px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.hero-text p{font-size:14px;color:var(--t2)}
+
+/* ===== STATS ROW ===== */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.stat-box{
+  background:var(--bg-card);border-radius:var(--r);padding:16px;text-align:center;
+  box-shadow:var(--sh-sm);
+}
+.stat-box .val{font-size:28px;font-weight:700;color:var(--t1);line-height:1.2}
+.stat-box .lbl{font-size:12px;color:var(--t2);margin-top:4px;font-weight:500}
+
+/* ===== PROGRESS BAR ===== */
+.progress-wrap{margin-bottom:24px}
+.progress-bar{
+  height:10px;background:#F0F0F5;border-radius:5px;overflow:hidden
+}
+.progress-fill{height:100%;border-radius:5px;transition:width .6s ease}
+.progress-fill.p-checkin{background:linear-gradient(90deg,var(--checkin),var(--coral))}
+.progress-fill.p-diet{background:linear-gradient(90deg,var(--diet),var(--lime))}
+.progress-fill.p-workout{background:linear-gradient(90deg,var(--workout),var(--yellow))}
+.progress-fill.p-learn{background:linear-gradient(90deg,var(--learn),var(--coral))}
+.progress-fill.p-expense{background:linear-gradient(90deg,var(--expense),var(--diet))}
+.progress-label{font-size:12px;color:var(--t2);margin-top:6px;text-align:right;font-weight:500}
+
+/* ===== CARDS ===== */
+.card{
+  background:var(--bg-card);border-radius:var(--r);padding:24px;
+  box-shadow:var(--sh-sm);margin-bottom:16px;border:1px solid rgba(0,0,0,0.03);
+}
+.card-title{font-size:18px;font-weight:700;color:var(--t1);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:50%}
+.dot-pink{background:var(--checkin)}.dot-green{background:var(--diet)}
+.dot-orange{background:var(--workout)}.dot-purple{background:var(--learn)}.dot-teal{background:var(--expense)}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;border-radius:24px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:var(--ease);font-family:inherit}
+.btn-primary{background:var(--checkin);color:white}.btn-primary:hover{background:#E55A78;box-shadow:0 4px 16px rgba(255,107,138,.4)}
+.btn-green{background:var(--diet);color:white}.btn-green:hover{background:#05B88A;box-shadow:0 4px 16px rgba(6,214,160,.4)}
+.btn-orange{background:var(--workout);color:white}.btn-orange:hover{background:#E67A3A;box-shadow:0 4px 16px rgba(255,138,71,.4)}
+.btn-purple{background:var(--learn);color:white}.btn-purple:hover{background:#8648D0;box-shadow:0 4px 16px rgba(155,93,229,.4)}
+.btn-teal{background:var(--expense);color:white}.btn-teal:hover{background:#00A3D9;box-shadow:0 4px 16px rgba(0,187,249,.4)}
+.btn-outline{background:transparent;border:2px solid #E0E0E8;color:var(--t2)}.btn-outline:hover{border-color:var(--checkin);color:var(--checkin)}
+.btn-sm{padding:6px 16px;font-size:12px}.btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
+.btn-icon{width:36px;height:36px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:#F0F0F5;border:none;cursor:pointer;font-size:16px;transition:var(--ease)}
+.btn-icon:hover{background:#E0E0EA}
+
+/* ===== FORMS ===== */
+.input,.select,.textarea{padding:12px 16px;border:2px solid #EEE;border-radius:var(--r-xs);font-size:14px;font-family:inherit;outline:none;transition:var(--ease);width:100%;background:#FAFAFC}
+.input:focus,.select:focus,.textarea:focus{background:white}
+#panel-checkin .input:focus,#panel-checkin .select:focus,#panel-checkin .textarea:focus{border-color:var(--checkin)}
+#panel-diet .input:focus,#panel-diet .select:focus,#panel-diet .textarea:focus{border-color:var(--diet)}
+#panel-workout .input:focus,#panel-workout .select:focus,#panel-workout .textarea:focus{border-color:var(--workout)}
+#panel-learn .input:focus,#panel-learn .select:focus,#panel-learn .textarea:focus{border-color:var(--learn)}
+#panel-expense .input:focus,#panel-expense .select:focus,#panel-expense .textarea:focus{border-color:var(--expense)}
+.input-group{display:flex;gap:8px}
+label{font-size:13px;font-weight:600;color:var(--t2);display:block;margin-bottom:6px}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow-x:auto;border-radius:var(--r-xs);border:1px solid #F0F0F5}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#F8F8FC;padding:12px 16px;text-align:left;font-weight:600;color:var(--t2);font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #E8E8F0}
+td{padding:12px 16px;border-bottom:1px solid #F0F0F5;color:var(--t1)}
+tr:last-child td{border-bottom:none}tr:hover td{background:#FAFAFD}
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.tag-training{background:#FFF0E6;color:var(--workout)}.tag-rest{background:#E6FFF8;color:var(--diet)}
+.tag-fitness{background:#FFF0F5;color:var(--checkin)}.tag-daily{background:#E6F7FF;color:var(--expense)}
+
+/* ===== CALENDAR ===== */
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calendar-header{text-align:center;font-size:12px;font-weight:600;color:var(--t2);padding:8px 0}
+.calendar-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;transition:var(--ease);border:2px solid transparent;background:#FAFAFC;min-height:40px}
+.calendar-day:hover{background:#F0F0F8;border-color:#E0E0E8}
+.calendar-day.today{background:var(--checkin-l);border-color:var(--checkin);font-weight:700}
+.calendar-day.selected{background:var(--checkin);color:white;border-color:var(--checkin)}
+#expenseCalendar .calendar-day.today{background:var(--expense-l);border-color:var(--expense)}
+#expenseCalendar .calendar-day.selected{background:var(--expense);color:white;border-color:var(--expense)}
+.calendar-day.has-data::after{content:'';position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:var(--diet)}
+.calendar-day.selected.has-data::after{background:white}
+.calendar-day.other-month{color:#D0D0D8}
+.calendar-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.calendar-month{font-size:16px;font-weight:700;color:var(--t1)}
+
+/* ===== CHECKIN ===== */
+.checkin-list{display:flex;flex-direction:column;gap:8px}
+.checkin-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:var(--r-xs);background:#FAFAFC;border:2px solid transparent;cursor:pointer;transition:var(--ease)}
+.checkin-item:hover{border-color:var(--checkin);background:var(--checkin-l)}
+.checkin-item.checked{background:#F0FFF8;border-color:var(--diet)}
+.checkin-checkbox{width:26px;height:26px;border-radius:8px;border:2px solid #D0D0D8;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:var(--ease)}
+.checkin-item.checked .checkin-checkbox{background:var(--diet);border-color:var(--diet);color:white}
+.checkin-label{flex:1;font-weight:500;font-size:15px}
+.checkin-delete{opacity:0;transition:var(--ease);color:#CCC;cursor:pointer;font-size:18px}
+.checkin-item:hover .checkin-delete{opacity:1}.checkin-delete:hover{color:var(--red)}
+
+/* ===== DIET ===== */
+.diet-macro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.macro-card{background:linear-gradient(135deg,#FAFAFC,#FFFFFF);border-radius:var(--r-xs);padding:18px;text-align:center;border:2px solid #F0F0F5;transition:var(--ease)}
+.macro-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.macro-value{font-size:30px;font-weight:700;margin:6px 0}
+.macro-label{font-size:12px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+.macro-gap{font-size:12px;margin-top:4px;font-weight:600}
+.macro-gap.positive{color:var(--diet)}.macro-gap.negative{color:var(--red)}
+.carb-color{color:var(--workout)}.protein-color{color:var(--checkin)}.fat-color{color:var(--yellow)}
+
+/* ===== CALORIE ===== */
+.calorie-card{background:linear-gradient(135deg,#1A1A2E,#2D2D4E);border-radius:var(--r);padding:22px;color:white;box-shadow:0 8px 32px rgba(26,26,46,.3)}
+.calorie-badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:16px}
+.cal-badge-training{background:linear-gradient(135deg,var(--workout),#FF6B35)}
+.cal-badge-rest{background:linear-gradient(135deg,var(--blue),var(--expense))}
+.calorie-grid{display:flex;align-items:center;justify-content:space-around;gap:8px}
+.calorie-item{flex:1;text-align:center}
+.calorie-num{font-size:38px;font-weight:800;line-height:1.1}
+.calorie-num.target{color:var(--yellow)}.calorie-num.actual{color:var(--diet)}
+.calorie-num.pos{color:var(--diet)}.calorie-num.neg{color:var(--checkin)}
+.calorie-sub{font-size:11px;opacity:.65;margin-top:4px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.calorie-breakdown{font-size:10px;opacity:.45;margin-top:3px;font-family:'SF Mono',monospace}
+.calorie-divider{width:1px;height:50px;background:rgba(255,255,255,.12)}
+@media(max-width:768px){.calorie-grid{flex-direction:column}.calorie-divider{width:80%;height:1px}.calorie-num{font-size:28px}}
+
+/* ===== VIDEO ===== */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.video-card{background:#FAFAFC;border-radius:var(--r-xs);overflow:hidden;border:1px solid #F0F0F5;cursor:pointer;transition:var(--ease)}
+.video-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+.video-thumb{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#E8E8F0,#D8D8E8);display:flex;align-items:center;justify-content:center;font-size:40px}
+.video-info{padding:12px}
+.video-title{font-size:14px;font-weight:600;margin-bottom:3px;line-height:1.4}
+.video-meta{font-size:12px;color:var(--t2)}
+
+/* ===== EXPENSE STATS ===== */
+.stat-card{background:linear-gradient(135deg,var(--expense),var(--blue));color:white;border-radius:var(--r);padding:18px;text-align:center;box-shadow:0 4px 18px rgba(0,187,249,.2)}
+.stat-card.orange-bg{background:linear-gradient(135deg,var(--workout),var(--coral));box-shadow:0 4px 18px rgba(255,138,71,.2)}
+.stat-card.pink-bg{background:linear-gradient(135deg,var(--checkin),var(--learn));box-shadow:0 4px 18px rgba(255,107,138,.2)}
+.stat-card.green-bg{background:linear-gradient(135deg,var(--diet),var(--expense));box-shadow:0 4px 18px rgba(6,214,160,.2)}
+.stat-value{font-size:34px;font-weight:700}
+.stat-label{font-size:12px;opacity:.85;margin-top:3px;font-weight:500}
+
+/* ===== LEARN ===== */
+.learn-topic{background:#FAFAFC;border-radius:var(--r-xs);padding:16px;border:2px solid transparent;transition:var(--ease);cursor:pointer}
+.learn-topic:hover{border-color:var(--learn);background:var(--learn-l)}
+.learn-topic.completed{background:var(--learn-l);border-color:var(--learn)}
+.learn-progress{height:6px;background:#E8E8F0;border-radius:3px;margin-top:12px;overflow:hidden}
+.learn-progress-bar{height:100%;background:linear-gradient(90deg,var(--learn),var(--coral));border-radius:3px;transition:width .5s ease}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:white;border-radius:var(--r);width:90%;max-width:800px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;animation:scaleIn .25s}
+@keyframes scaleIn{from{transform:scale(.95)}to{transform:scale(1)}}
+.modal-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0F0F5}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:#F0F0F5;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:var(--ease)}
+.modal-close:hover{background:#E0E0E8}
+
+/* ===== MISC ===== */
+.empty-state{text-align:center;padding:40px;color:var(--t2)}
+.empty-state-icon{font-size:48px;margin-bottom:12px;opacity:.5}
+.empty-state-text{font-size:14px}
+.toast{position:fixed;bottom:24px;right:24px;background:#1A1A2E;color:white;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:500;z-index:200;animation:slideUp .3s;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#D0D0D8;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#B0B0B8}
+.inline-video-container{position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:var(--r-xs);overflow:hidden;margin-top:14px}
+.inline-video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+@media(max-width:768px){
+  .sidebar{width:44px;min-width:44px}
+  .nav-item{width:32px;height:32px;font-size:16px;border-radius:10px}
+  .panel{padding:16px}
+  .hero-icon{width:48px;height:48px;border-radius:14px}
+  .hero-text h1{font-size:22px}
+  .stat-box .val{font-size:22px}
+  .macro-value{font-size:24px}.stat-value{font-size:26px}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">💪</div>
+  <div class="nav-item item-checkin active" data-panel="checkin" data-color="checkin">
+    <span class="nav-icon">✅</span>
+    <span class="nav-tooltip">每日打卡</span>
+  </div>
+  <div class="nav-item item-diet" data-panel="diet" data-color="diet">
+    <span class="nav-icon">🥗</span>
+    <span class="nav-tooltip">饮食搭配</span>
+  </div>
+  <div class="nav-item item-workout" data-panel="workout" data-color="workout">
+    <span class="nav-icon">🏋️</span>
+    <span class="nav-tooltip">健身运动</span>
+  </div>
+  <div class="nav-item item-learn" data-panel="learn" data-color="learn">
+    <span class="nav-icon">📚</span>
+    <span class="nav-tooltip">健身学习</span>
+  </div>
+  <div class="nav-item item-expense" data-panel="expense" data-color="expense">
+    <span class="nav-icon">💰</span>
+    <span class="nav-tooltip">日常花销</span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main-canvas" id="mainCanvas">
+
+<!-- ===== 每日打卡 ===== -->
+<section class="panel active" id="panel-checkin">
+  <div class="hero">
+    <div class="hero-icon h-checkin"><span>✅</span></div>
+    <div class="hero-text"><h1>每日打卡</h1><p>坚持打卡，养成好习惯</p></div>
+  </div>
+  <div class="stats-row" id="checkinStats"></div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill p-checkin" id="checkinProgress" style="width:0%"></div></div>
+    <div class="progress-label" id="checkinProgressLabel"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 今日打卡 — <span id="checkinDateLabel"></span></div>
+    <div class="checkin-list" id="checkinList"></div>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <input class="input" id="newCheckinItem" placeholder="添加新打卡事项..." style="flex:1">
+      <button class="btn btn-primary" onclick="addCheckinItem()">+ 添加</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 打卡日历</div>
+    <div id="checkinCalendar"></div>
+  </div>
+</section>
+
+<!-- ===== 饮食搭配 ===== -->
+<section class="panel" id="panel-diet">
+  <div class="hero">
+    <div class="hero-icon h-diet"><span>🥗</span></div>
+    <div class="hero-text"><h1>饮食搭配</h1><p>科学营养，精准摄入</p></div>
+  </div>
+  <div class="stats-row" id="dietStats"></div>
+  <div class="card">
+    <div class="card-title">🎯 宏量营养素目标设定</div>
+    <div style="margin-bottom:14px">
+      <label>训练类型</label>
+      <select class="select" id="dietType" onchange="switchDietType()" style="width:100%">
+        <option value="training">🏋️ 力训日</option><option value="rest">🛌 休息日</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div><label>目标碳水 (g)</label><input class="input" type="number" id="targetCarbs" placeholder="200"></div>
+      <div><label>目标蛋白质 (g)</label><input class="input" type="number" id="targetProtein" placeholder="150"></div>
+      <div><label>目标脂肪 (g)</label><input class="input" type="number" id="targetFat" placeholder="60"></div>
+    </div>
+    <button class="btn btn-green" style="margin-top:12px" onclick="saveDietTarget()">💾 保存目标</button>
+    <div class="diet-macro-grid" id="dietMacroDisplay" style="margin-top:16px"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📝 今日实际摄入录入</div>
+    <div style="margin-bottom:8px"><label>日期</label><input class="input" type="date" id="dietDate"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div><label>实际碳水 (g)</label><input class="input" type="number" id="actualCarbs" placeholder="0"></div>
+      <div><label>实际蛋白质 (g)</label><input class="input" type="number" id="actualProtein" placeholder="0"></div>
+      <div><label>实际脂肪 (g)</label><input class="input" type="number" id="actualFat" placeholder="0"></div>
+    </div>
+    <button class="btn btn-green" style="margin-top:12px" onclick="recordDiet()">📝 记录今日摄入</button>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 饮食台账</div>
+    <div class="table-wrap" id="dietHistoryTable"></div>
+  </div>
+</section>
+
+<!-- ===== 健身运动 ===== -->
+<section class="panel" id="panel-workout">
+  <div class="hero">
+    <div class="hero-icon h-workout"><span>🏋️</span></div>
+    <div class="hero-text"><h1>健身运动</h1><p>三分化训练 · 动作检索 · 训练日志</p></div>
+  </div>
+  <div class="stats-row" id="workoutStats"></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">💪 今日训练记录</div>
+      <div style="margin-bottom:10px"><label>日期</label><input class="input" type="date" id="workoutDate"></div>
+      <div style="margin-bottom:10px"><label>训练肌群部位</label><input class="input" id="workoutMuscle" placeholder="例如：胸+三头 / 背+二头 / 腿+肩"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div><label>重量 (kg)</label><input class="input" type="number" id="workoutWeight" placeholder="0"></div>
+        <div><label>组数</label><input class="input" type="number" id="workoutSets" placeholder="0"></div>
+        <div><label>次数</label><input class="input" type="number" id="workoutReps" placeholder="0"></div>
+      </div>
+      <div style="margin-top:10px"><label>训练体感</label><textarea class="textarea" id="workoutFeeling" placeholder="记录今日训练感受..."></textarea></div>
+      <button class="btn btn-orange" style="margin-top:12px" onclick="saveWorkout()">💾 保存训练记录</button>
+    </div>
+    <div class="card">
+      <div class="card-title">🔍 动作检索</div>
+      <div class="input-group" style="margin-bottom:14px">
+        <input class="input" id="exerciseSearch" placeholder="输入动作名称，如：杠铃卧推、深蹲..." style="flex:1">
+        <button class="btn btn-orange" onclick="searchExercise()">🔍 搜索</button>
+      </div>
+      <div id="videoResults" class="video-grid"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 训练历史日志</div>
+    <div class="table-wrap" id="workoutHistoryTable"></div>
+  </div>
+</section>
+
+<!-- ===== 健身学习 ===== -->
+<section class="panel" id="panel-learn">
+  <div class="hero">
+    <div class="hero-icon h-learn"><span>📚</span></div>
+    <div class="hero-text"><h1>健身学习</h1><p>运动解剖学 · 运动生理学 · 持续精进</p></div>
+  </div>
+  <div class="stats-row" id="learnStats"></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📖 学习课题</div>
+      <div id="learnTopics" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div style="margin-top:14px;display:flex;gap:8px">
+        <input class="input" id="newLearnTopic" placeholder="新增学习课题..." style="flex:1">
+        <button class="btn btn-purple btn-sm" onclick="addLearnTopic()">+ 添加</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎬 B站视频检索</div>
+      <div class="input-group" style="margin-bottom:14px">
+        <input class="input" id="learnSearch" placeholder="搜索健身教学视频..." style="flex:1">
+        <button class="btn btn-purple" onclick="searchLearnVideo()">🔍 搜索</button>
+      </div>
+      <div id="learnVideoResults" class="video-grid"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📝 学习笔记</div>
+    <div style="margin-bottom:10px"><label>选择课题</label><select class="select" id="learnTopicSelect" style="width:100%"></select></div>
+    <div style="margin-bottom:10px"><label>日期</label><input class="input" type="date" id="learnDate"></div>
+    <textarea class="textarea" id="learnNotes" placeholder="记录学习笔记..."></textarea>
+    <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+      <button class="btn btn-purple" onclick="saveLearnNotes()">💾 保存笔记</button>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0">
+        <input type="checkbox" id="learnCompleted" style="width:18px;height:18px">
+        <span>标记今日学习完成</span>
+      </label>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 学习记录</div>
+    <div class="table-wrap" id="learnHistoryTable"></div>
+  </div>
+</section>
+
+<!-- ===== 日常花销 ===== -->
+<section class="panel" id="panel-expense">
+  <div class="hero">
+    <div class="hero-icon h-expense"><span>💰</span></div>
+    <div class="hero-text"><h1>日常花销</h1><p>记账管理 · 月度统计 · 健身专项</p></div>
+  </div>
+  <div class="grid-3" id="expenseStats"></div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-title">📅 花销日历</div>
+      <div id="expenseCalendar"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">💳 记录消费</div>
+      <div style="margin-bottom:10px"><label>日期</label><input class="input" type="date" id="expenseDate"></div>
+      <div style="margin-bottom:10px"><label>消费项目</label><input class="input" id="expenseItem" placeholder="如：蛋白粉、午餐、瑜伽垫..."></div>
+      <div style="margin-bottom:10px"><label>消费金额 (元)</label><input class="input" type="number" id="expenseAmount" placeholder="0.00" step="0.01"></div>
+      <div style="margin-bottom:10px"><label>消费分类</label>
+        <select class="select" id="expenseCategory" style="width:100%">
+          <option value="fitness">健身专项支出</option><option value="daily">日常生活支出</option>
+        </select>
+      </div>
+      <button class="btn btn-teal" onclick="recordExpense()">💾 记录消费</button>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-title">📋 消费明细 — <span id="expenseDetailDate"></span></div>
+    <div class="table-wrap" id="expenseDetailTable"></div>
+  </div>
+</section>
+
+</main>
+
+<!-- Video Modal -->
+<div class="modal-overlay" id="videoModal" style="display:none" onclick="closeVideoModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <strong id="videoModalTitle">教学视频</strong>
+      <button class="modal-close" onclick="closeVideoModal()">✕</button>
+    </div>
+    <div class="modal-body" id="videoModalBody"></div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA STORE ====================
+const STORE = {
+  get(k, d) { try { const v = localStorage.getItem('wb_'+k); return v ? JSON.parse(v) : d; } catch(e) { return d; } },
+  set(k, v) { localStorage.setItem('wb_'+k, JSON.stringify(v)); }
+};
+
+const COLORS = {
+  checkin: '#FF6B8A', diet: '#06D6A0', workout: '#FF8A47', learn: '#9B5DE5', expense: '#00BBF9'
+};
+
+// ==================== NAVIGATION ====================
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => {
+      i.classList.remove('active');
+      i.style.background = 'transparent';
+      i.style.color = '';
+      i.style.boxShadow = '';
+    });
+    item.classList.add('active');
+    const c = item.dataset.color;
+    item.style.background = COLORS[c];
+    item.style.color = 'white';
+    item.style.boxShadow = '0 4px 14px '+COLORS[c]+'59';
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const panelId = 'panel-' + item.dataset.panel;
+    document.getElementById(panelId).classList.add('active');
+    document.getElementById('mainCanvas').scrollTo({ top: 0, behavior: 'smooth' });
+    initPanel(item.dataset.panel);
+  });
+});
+
+// ==================== UTILS ====================
+function fmtDate(d) { return d.toISOString().slice(0,10); }
+function today() { return fmtDate(new Date()); }
+function fmtMoney(n) { return '¥' + (Number(n)||0).toFixed(2); }
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 300); }, 2000);
+}
+
+function showVideoModal(title, bvid) {
+  document.getElementById('videoModalTitle').textContent = title;
+  document.getElementById('videoModalBody').innerHTML =
+    '<div class="inline-video-container"><iframe src="https://player.bilibili.com/player.html?bvid='+bvid+'&autoplay=1" allowfullscreen></iframe></div>';
+  document.getElementById('videoModal').style.display = 'flex';
+}
+function closeVideoModal(e) {
+  if (e && e.target !== document.getElementById('videoModal')) return;
+  document.getElementById('videoModal').style.display = 'none';
+  document.getElementById('videoModalBody').innerHTML = '';
+}
+
+// ==================== CALENDAR ====================
+function renderCalendar(containerId, year, month, onSelect, getDayData) {
+  const container = document.getElementById(containerId);
+  const days = ['日','一','二','三','四','五','六'];
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysInPrevMonth = new Date(year, month, 0).getDate();
+  const todayStr = today();
+  const selDate = STORE.get(containerId+'_sel', todayStr);
+
+  let html = '<div class="calendar-nav"><button class="btn-icon" onclick="navigateCalendar(\''+containerId+'\', -1)">◀</button><span class="calendar-month">'+year+'年 '+(month+1)+'月</span><button class="btn-icon" onclick="navigateCalendar(\''+containerId+'\', 1)">▶</button></div><div class="calendar">';
+  days.forEach(d => html += '<div class="calendar-header">'+d+'</div>');
+  for (let i = firstDay-1; i >= 0; i--) {
+    const d = daysInPrevMonth - i;
+    html += '<div class="calendar-day other-month">'+d+'</div>';
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = fmtDate(new Date(year, month, d));
+    let cls = 'calendar-day';
+    if (ds === todayStr) cls += ' today';
+    if (ds === selDate) cls += ' selected';
+    if (getDayData && getDayData(ds)) cls += ' has-data';
+    html += '<div class="'+cls+'" data-date="'+ds+'">'+d+'</div>';
+  }
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let d = 1; d <= remaining; d++) {
+    html += '<div class="calendar-day other-month">'+d+'</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+  container.querySelectorAll('.calendar-day:not(.other-month)').forEach(day => {
+    day.addEventListener('click', () => {
+      const ds = day.dataset.date;
+      STORE.set(containerId+'_sel', ds);
+      renderCalendar(containerId, year, month, onSelect, getDayData);
+      if (onSelect) onSelect(ds);
+    });
+  });
+}
+
+function navigateCalendar(containerId, delta) {
+  let y = STORE.get(containerId+'_year', new Date().getFullYear());
+  let m = STORE.get(containerId+'_month', new Date().getMonth());
+  m += delta; if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; }
+  STORE.set(containerId+'_year', y); STORE.set(containerId+'_month', m);
+  initPanelByContainer(containerId);
+}
+
+function initPanelByContainer(cid) {
+  const map = { 'checkinCalendar': 'checkin', 'expenseCalendar': 'expense' };
+  if (map[cid]) initPanel(map[cid]);
+}
+
+// ==================== INIT ====================
+function initPanel(panel) {
+  switch(panel) {
+    case 'checkin': initCheckin(); break;
+    case 'diet': initDiet(); break;
+    case 'workout': initWorkout(); break;
+    case 'learn': initLearn(); break;
+    case 'expense': initExpense(); break;
+  }
+}
+
+// ==================== 1. CHECKIN ====================
+function getCheckinItems() { return STORE.get('checkin_items', ['是否早睡','是否饮食规律','是否运动']); }
+function getCheckinData() { return STORE.get('checkin_data', {}); }
+
+function initCheckin() {
+  const y = STORE.get('checkinCalendar_year', new Date().getFullYear());
+  const m = STORE.get('checkinCalendar_month', new Date().getMonth());
+  const selDate = STORE.get('checkinCalendar_sel', today());
+  document.getElementById('checkinDateLabel').textContent = selDate;
+  renderCalendar('checkinCalendar', y, m, onCheckinDateSelect, ds => {
+    const data = getCheckinData()[ds];
+    return data && Object.values(data).some(v => v);
+  });
+  renderCheckinList(selDate);
+  renderCheckinStats();
+}
+
+function renderCheckinStats() {
+  const data = getCheckinData();
+  const items = getCheckinItems();
+  const now = new Date();
+  const thisMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  // 连续打卡天数
+  let streak = 0;
+  let d = new Date();
+  while (true) {
+    const ds = fmtDate(d);
+    const dayData = data[ds] || {};
+    const allChecked = items.length > 0 && items.every(item => dayData[item]);
+    if (allChecked) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  // 本月打卡次数
+  let monthCount = 0;
+  Object.entries(data).forEach(([ds, dayData]) => {
+    if (ds.startsWith(thisMonth)) {
+      if (Object.values(dayData).some(v => v)) monthCount++;
+    }
+  });
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const rate = Math.round((monthCount / Math.max(1, daysInMonth)) * 100);
+
+  document.getElementById('checkinStats').innerHTML =
+    '<div class="stat-box"><div class="val">'+streak+'</div><div class="lbl">连续打卡 (天)</div></div>'+
+    '<div class="stat-box"><div class="val">'+monthCount+'</div><div class="lbl">本月打卡 (次)</div></div>'+
+    '<div class="stat-box"><div class="val">'+rate+'%</div><div class="lbl">本月完成率</div></div>';
+
+  document.getElementById('checkinProgress').style.width = rate+'%';
+  document.getElementById('checkinProgressLabel').textContent = '本月打卡进度 '+rate+'%';
+}
+
+function onCheckinDateSelect(ds) {
+  document.getElementById('checkinDateLabel').textContent = ds;
+  renderCheckinList(ds);
+}
+
+function renderCheckinList(ds) {
+  const items = getCheckinItems();
+  const data = getCheckinData();
+  const dayData = data[ds] || {};
+  document.getElementById('checkinList').innerHTML = items.map((item, i) =>
+    '<div class="checkin-item '+(dayData[item]?'checked':'')+'" onclick="toggleCheckin(\''+ds+'\', \''+item.replace(/'/g,"\\'")+'\')">'+
+    '<div class="checkin-checkbox">'+(dayData[item]?'✓':'')+'</div>'+
+    '<span class="checkin-label">'+item+'</span>'+
+    '<span class="checkin-delete" onclick="event.stopPropagation();deleteCheckinItem('+i+')">×</span></div>'
+  ).join('');
+}
+
+function toggleCheckin(ds, item) {
+  const data = getCheckinData();
+  if (!data[ds]) data[ds] = {};
+  data[ds][item] = !data[ds][item];
+  STORE.set('checkin_data', data);
+  renderCheckinList(ds);
+  renderCheckinStats();
+  initCheckin();
+  toast(data[ds][item] ? '✅ '+item+' - 已打卡' : '↩️ '+item+' - 已取消');
+}
+
+function addCheckinItem() {
+  const input = document.getElementById('newCheckinItem');
+  const val = input.value.trim();
+  if (!val) return toast('请输入打卡事项');
+  const items = getCheckinItems();
+  if (items.includes(val)) return toast('该事项已存在');
+  items.push(val); STORE.set('checkin_items', items);
+  input.value = '';
+  renderCheckinList(STORE.get('checkinCalendar_sel', today()));
+  renderCheckinStats();
+  toast('✅ 已添加：'+val);
+}
+
+function deleteCheckinItem(idx) {
+  const items = getCheckinItems();
+  const removed = items.splice(idx, 1)[0];
+  STORE.set('checkin_items', items);
+  const data = getCheckinData();
+  Object.keys(data).forEach(ds => { delete data[ds][removed]; });
+  STORE.set('checkin_data', data);
+  renderCheckinList(STORE.get('checkinCalendar_sel', today()));
+  renderCheckinStats();
+  initCheckin();
+  toast('已删除：'+removed);
+}
+
+// ==================== 2. DIET ====================
+function getDietTargets() { return STORE.get('diet_targets', { training: { carbs:200, protein:150, fat:60 }, rest: { carbs:150, protein:130, fat:55 } }); }
+function getDietHistory() { return STORE.get('diet_history', []); }
+
+function initDiet() {
+  const targets = getDietTargets();
+  const type = document.getElementById('dietType').value;
+  const t = targets[type];
+  document.getElementById('targetCarbs').value = t.carbs;
+  document.getElementById('targetProtein').value = t.protein;
+  document.getElementById('targetFat').value = t.fat;
+  document.getElementById('dietDate').value = today();
+  renderDietMacros(type);
+  renderDietHistory();
+  renderDietStats(type);
+}
+
+function renderDietStats(type) {
+  const targets = getDietTargets();
+  const t = targets[type];
+  const targetCal = t.carbs*4 + t.protein*4 + t.fat*9;
+  const history = getDietHistory();
+  const todayStr = today();
+  const todayRecords = history.filter(h => h.date === todayStr && h.type === type);
+  let aC = 0, aP = 0, aF = 0;
+  todayRecords.forEach(r => { aC += r.carbs||0; aP += r.protein||0; aF += r.fat||0; });
+  const actualCal = aC*4 + aP*4 + aF*9;
+  const pct = targetCal > 0 ? Math.round((actualCal/targetCal)*100) : 0;
+  document.getElementById('dietStats').innerHTML =
+    '<div class="stat-box"><div class="val">'+targetCal+'</div><div class="lbl">目标热量 (kcal)</div></div>'+
+    '<div class="stat-box"><div class="val">'+actualCal+'</div><div class="lbl">今日摄入 (kcal)</div></div>'+
+    '<div class="stat-box"><div class="val">'+pct+'%</div><div class="lbl">达成率</div></div>';
+}
+
+function switchDietType() {
+  const targets = getDietTargets();
+  const type = document.getElementById('dietType').value;
+  const t = targets[type];
+  document.getElementById('targetCarbs').value = t.carbs;
+  document.getElementById('targetProtein').value = t.protein;
+  document.getElementById('targetFat').value = t.fat;
+  renderDietMacros(type);
+  renderDietStats(type);
+}
+
+function saveDietTarget() {
+  const type = document.getElementById('dietType').value;
+  const targets = getDietTargets();
+  targets[type] = {
+    carbs: Number(document.getElementById('targetCarbs').value) || 0,
+    protein: Number(document.getElementById('targetProtein').value) || 0,
+    fat: Number(document.getElementById('targetFat').value) || 0
+  };
+  STORE.set('diet_targets', targets);
+  renderDietMacros(type);
+  renderDietStats(type);
+  toast('✅ 目标已保存');
+}
+
+function renderDietMacros(type) {
+  const targets = getDietTargets();
+  const t = targets[type];
+  const history = getDietHistory();
+  const todayStr = today();
+  const todayRecord = history.filter(h => h.date === todayStr && h.type === type);
+  let aC = 0, aP = 0, aF = 0;
+  todayRecord.forEach(r => { aC += r.carbs||0; aP += r.protein||0; aF += r.fat||0; });
+  const totalCalTarget = t.carbs*4 + t.protein*4 + t.fat*9;
+  const totalCalActual = aC*4 + aP*4 + aF*9;
+  const gapC = aC - t.carbs, gapP = aP - t.protein, gapF = aF - t.fat;
+  const diff = totalCalActual - totalCalTarget;
+
+  document.getElementById('dietMacroDisplay').innerHTML =
+    '<div class="macro-card"><div class="macro-label">目标碳水</div><div class="macro-value carb-color">'+t.carbs+'g</div><div style="font-size:12px;color:var(--t2)">实际: '+aC+'g</div><div class="macro-gap '+(gapC>=0?'positive':'negative')+'">'+(gapC>=0?'超出':'缺口')+' '+Math.abs(gapC)+'g</div></div>'+
+    '<div class="macro-card"><div class="macro-label">目标蛋白质</div><div class="macro-value protein-color">'+t.protein+'g</div><div style="font-size:12px;color:var(--t2)">实际: '+aP+'g</div><div class="macro-gap '+(gapP>=0?'positive':'negative')+'">'+(gapP>=0?'超出':'缺口')+' '+Math.abs(gapP)+'g</div></div>'+
+    '<div class="macro-card"><div class="macro-label">目标脂肪</div><div class="macro-value fat-color">'+t.fat+'g</div><div style="font-size:12px;color:var(--t2)">实际: '+aF+'g</div><div class="macro-gap '+(gapF>=0?'positive':'negative')+'">'+(gapF>=0?'超出':'缺口')+' '+Math.abs(gapF)+'g</div></div>'+
+    '<div class="calorie-card" style="grid-column:1/-1">'+
+    '<div class="calorie-badge '+(type==='training'?'cal-badge-training':'cal-badge-rest')+'">'+(type==='training'?'🏋️ 力训日热量标准':'🛌 休息日热量标准')+'</div>'+
+    '<div class="calorie-grid">'+
+    '<div class="calorie-item"><div class="calorie-num target">'+totalCalTarget+'</div><div class="calorie-sub">目标热量 (kcal)</div><div class="calorie-breakdown">碳水 '+t.carbs*4+' + 蛋白质 '+t.protein*4+' + 脂肪 '+t.fat*9+'</div></div>'+
+    '<div class="calorie-divider"></div>'+
+    '<div class="calorie-item"><div class="calorie-num actual">'+totalCalActual+'</div><div class="calorie-sub">实际摄入 (kcal)</div><div class="calorie-breakdown">碳水 '+aC*4+' + 蛋白质 '+aP*4+' + 脂肪 '+aF*9+'</div></div>'+
+    '<div class="calorie-divider"></div>'+
+    '<div class="calorie-item"><div class="calorie-num '+(diff>=0?'pos':'neg')+'">'+(diff>=0?'+':'')+diff+'</div><div class="calorie-sub">热量差额 (kcal)</div><div class="calorie-breakdown">'+(diff>=0?'超出目标':'低于目标')+' '+(totalCalTarget>0?Math.abs((diff/totalCalTarget*100).toFixed(1)):0)+'%</div></div>'+
+    '</div></div>';
+}
+
+function recordDiet() {
+  const type = document.getElementById('dietType').value;
+  const date = document.getElementById('dietDate').value || today();
+  const record = { date, type, carbs: Number(document.getElementById('actualCarbs').value)||0, protein: Number(document.getElementById('actualProtein').value)||0, fat: Number(document.getElementById('actualFat').value)||0 };
+  const history = getDietHistory();
+  history.push(record); STORE.set('diet_history', history);
+  document.getElementById('actualCarbs').value = ''; document.getElementById('actualProtein').value = ''; document.getElementById('actualFat').value = '';
+  renderDietMacros(type); renderDietHistory(); renderDietStats(type);
+  toast('✅ 饮食记录已保存');
+}
+
+function renderDietHistory() {
+  const history = getDietHistory();
+  const targets = getDietTargets();
+  const container = document.getElementById('dietHistoryTable');
+  if (history.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">暂无饮食记录</div></div>';
+    return;
+  }
+  const reversed = [...history].reverse();
+  container.innerHTML = '<table><thead><tr><th>日期</th><th>训练类型</th><th>碳水 (g)</th><th>蛋白质 (g)</th><th>脂肪 (g)</th><th>实际热量 (kcal)</th><th>目标热量 (kcal)</th><th>差额</th></tr></thead><tbody>'+reversed.map(r => {
+    const cal = (r.carbs||0)*4 + (r.protein||0)*4 + (r.fat||0)*9;
+    const tgt = targets[r.type] || {carbs:0,protein:0,fat:0};
+    const tgtCal = tgt.carbs*4 + tgt.protein*4 + tgt.fat*9;
+    const diff = cal - tgtCal;
+    return '<tr><td>'+r.date+'</td><td><span class="tag '+(r.type==='training'?'tag-training':'tag-rest')+'">'+(r.type==='training'?'力训日':'休息日')+'</span></td><td>'+(r.carbs||0)+'</td><td>'+(r.protein||0)+'</td><td>'+(r.fat||0)+'</td><td><strong>'+cal+'</strong></td><td>'+tgtCal+'</td><td style="color:'+(diff>=0?'var(--dopa-green)':'var(--dopa-red)')+';font-weight:700">'+(diff>=0?'+':'')+diff+'</td></tr>';
+  }).join('')+'</tbody></table>';
+}
+
+// ==================== 3. WORKOUT ====================
+function getWorkoutHistory() { return STORE.get('workout_history', []); }
+
+function initWorkout() {
+  document.getElementById('workoutDate').value = today();
+  renderWorkoutHistory();
+  renderWorkoutStats();
+}
+
+function renderWorkoutStats() {
+  const history = getWorkoutHistory();
+  const now = new Date();
+  const weekAgo = new Date(now); weekAgo.setDate(now.getDate()-7);
+  const weekStr = fmtDate(weekAgo);
+  const thisWeek = history.filter(h => h.date >= weekStr);
+  const totalSets = history.reduce((s,h) => s+(h.sets||0), 0);
+  const totalVolume = history.reduce((s,h) => s+(h.weight||0)*(h.sets||0)*(h.reps||0), 0);
+  document.getElementById('workoutStats').innerHTML =
+    '<div class="stat-box"><div class="val">'+thisWeek.length+'</div><div class="lbl">本周训练次数</div></div>'+
+    '<div class="stat-box"><div class="val">'+totalSets+'</div><div class="lbl">总训练组数</div></div>'+
+    '<div class="stat-box"><div class="val">'+(totalVolume/1000).toFixed(1)+'k</div><div class="lbl">总训练容量 (kg)</div></div>';
+}
+
+function saveWorkout() {
+  const record = {
+    date: document.getElementById('workoutDate').value || today(),
+    muscle: document.getElementById('workoutMuscle').value.trim(),
+    weight: Number(document.getElementById('workoutWeight').value) || 0,
+    sets: Number(document.getElementById('workoutSets').value) || 0,
+    reps: Number(document.getElementById('workoutReps').value) || 0,
+    feeling: document.getElementById('workoutFeeling').value.trim()
+  };
+  if (!record.muscle) return toast('请填写训练肌群部位');
+  const history = getWorkoutHistory();
+  history.push(record); STORE.set('workout_history', history);
+  document.getElementById('workoutMuscle').value = ''; document.getElementById('workoutWeight').value = '';
+  document.getElementById('workoutSets').value = ''; document.getElementById('workoutReps').value = '';
+  document.getElementById('workoutFeeling').value = '';
+  renderWorkoutHistory(); renderWorkoutStats();
+  toast('💪 训练记录已保存');
+}
+
+function renderWorkoutHistory() {
+  const history = getWorkoutHistory();
+  const container = document.getElementById('workoutHistoryTable');
+  if (history.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏋️</div><div class="empty-state-text">暂无训练记录，开始你的第一次训练吧！</div></div>';
+    return;
+  }
+  const reversed = [...history].reverse();
+  container.innerHTML = '<table><thead><tr><th>日期</th><th>肌群部位</th><th>重量 (kg)</th><th>组数</th><th>次数</th><th>训练体感</th></tr></thead><tbody>'+reversed.map(r => '<tr><td>'+r.date+'</td><td><strong>'+r.muscle+'</strong></td><td>'+r.weight+'</td><td>'+r.sets+'</td><td>'+r.reps+'</td><td>'+(r.feeling||'-')+'</td></tr>').join('')+'</tbody></table>';
+}
+
+async function searchExercise() {
+  const q = document.getElementById('exerciseSearch').value.trim();
+  if (!q) return toast('请输入动作名称');
+  const container = document.getElementById('videoResults');
+  container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">搜索中...</div></div>';
+  try {
+    const resp = await fetch('https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword='+encodeURIComponent(q+' 健身教学')+'&page=1');
+    const data = await resp.json();
+    if (data.code === 0 && data.data.result) {
+      const videos = data.data.result.slice(0, 6);
+      container.innerHTML = videos.map(v => '<div class="video-card" onclick="showVideoModal(\''+v.title.replace(/'/g,"\\'")+'\', \''+v.bvid+'\')"><div class="video-thumb" style="background-image:url('+v.pic.replace('http:','https:')+');background-size:cover;background-position:center"></div><div class="video-info"><div class="video-title">'+v.title+'</div><div class="video-meta">👁 '+(v.play/10000).toFixed(1)+'万 · '+v.author+'</div></div></div>').join('');
+      if (videos.length === 0) container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">未找到相关视频</div></div>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">搜索失败，请重试</div></div>';
+    }
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">网络错误，请检查连接</div></div>';
+  }
+}
+
+// ==================== 4. LEARN ====================
+function getLearnTopics() { return STORE.get('learn_topics', ['运动解剖学','运动生理学']); }
+function getLearnData() { return STORE.get('learn_data', {}); }
+
+function initLearn() {
+  document.getElementById('learnDate').value = today();
+  renderLearnTopics(); updateLearnSelect(); renderLearnHistory(); renderLearnStats();
+}
+
+function renderLearnStats() {
+  const topics = getLearnTopics();
+  const data = getLearnData();
+  let totalNotes = 0, totalCompleted = 0;
+  const now = new Date(); const thisMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  let monthCompleted = 0;
+  Object.entries(data).forEach(([topic, d]) => {
+    totalNotes += (d.notes||[]).length;
+    (d.completedDates||[]).forEach(ds => { totalCompleted++; if (ds.startsWith(thisMonth)) monthCompleted++; });
+  });
+  document.getElementById('learnStats').innerHTML =
+    '<div class="stat-box"><div class="val">'+topics.length+'</div><div class="lbl">学习课题数</div></div>'+
+    '<div class="stat-box"><div class="val">'+monthCompleted+'</div><div class="lbl">本月完成天数</div></div>'+
+    '<div class="stat-box"><div class="val">'+totalNotes+'</div><div class="lbl">总笔记数</div></div>';
+}
+
+function renderLearnTopics() {
+  const topics = getLearnTopics();
+  const data = getLearnData();
+  document.getElementById('learnTopics').innerHTML = topics.map(t => {
+    const td = data[t] || {}; const notes = td.notes || [];
+    const completedDates = td.completedDates || [];
+    const progress = notes.length > 0 ? Math.min(100, notes.length*10 + completedDates.length*20) : 0;
+    return '<div class="learn-topic '+(completedDates.includes(today())?'completed':'')+'"><div style="display:flex;align-items:center;justify-content:space-between"><strong style="font-size:15px">📖 '+t+'</strong><span style="font-size:11px;color:var(--t2)">'+notes.length+' 条笔记 · '+completedDates.length+' 天完成</span></div><div class="learn-progress"><div class="learn-progress-bar" style="width:'+progress+'%"></div></div><div style="margin-top:6px;font-size:11px;color:var(--t2)">学习进度 '+progress+'%</div></div>';
+  }).join('');
+}
+
+function addLearnTopic() {
+  const val = document.getElementById('newLearnTopic').value.trim();
+  if (!val) return toast('请输入学习课题');
+  const topics = getLearnTopics();
+  if (topics.includes(val)) return toast('该课题已存在');
+  topics.push(val); STORE.set('learn_topics', topics);
+  document.getElementById('newLearnTopic').value = '';
+  renderLearnTopics(); updateLearnSelect(); renderLearnStats();
+  toast('✅ 已添加课题：'+val);
+}
+
+function updateLearnSelect() {
+  const topics = getLearnTopics();
+  document.getElementById('learnTopicSelect').innerHTML = topics.map(t => '<option value="'+t+'">'+t+'</option>').join('');
+}
+
+function saveLearnNotes() {
+  const topic = document.getElementById('learnTopicSelect').value;
+  const date = document.getElementById('learnDate').value || today();
+  const notes = document.getElementById('learnNotes').value.trim();
+  const completed = document.getElementById('learnCompleted').checked;
+  if (!notes && !completed) return toast('请填写笔记或标记完成状态');
+  const data = getLearnData();
+  if (!data[topic]) data[topic] = { notes: [], completedDates: [] };
+  if (notes) data[topic].notes.push({ date, text: notes });
+  if (completed && !data[topic].completedDates.includes(date)) data[topic].completedDates.push(date);
+  STORE.set('learn_data', data);
+  document.getElementById('learnNotes').value = ''; document.getElementById('learnCompleted').checked = false;
+  renderLearnTopics(); renderLearnHistory(); renderLearnStats();
+  toast('✅ 学习记录已保存');
+}
+
+function renderLearnHistory() {
+  const data = getLearnData();
+  let allRecords = [];
+  Object.entries(data).forEach(([topic, d]) => {
+    (d.notes||[]).forEach(n => allRecords.push({ topic, date: n.date, text: n.text, type: '笔记' }));
+    (d.completedDates||[]).forEach(ds => allRecords.push({ topic, date: ds, text: '已完成学习', type: '完成' }));
+  });
+  allRecords.sort((a,b) => b.date.localeCompare(a.date));
+  const container = document.getElementById('learnHistoryTable');
+  if (allRecords.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-text">暂无学习记录</div></div>';
+    return;
+  }
+  container.innerHTML = '<table><thead><tr><th>日期</th><th>课题</th><th>类型</th><th>内容</th></tr></thead><tbody>'+allRecords.map(r => '<tr><td>'+r.date+'</td><td><strong>'+r.topic+'</strong></td><td><span class="tag '+(r.type==='完成'?'tag-rest':'tag-training')+'">'+r.type+'</span></td><td>'+r.text+'</td></tr>').join('')+'</tbody></table>';
+}
+
+async function searchLearnVideo() {
+  const q = document.getElementById('learnSearch').value.trim();
+  if (!q) return toast('请输入搜索关键词');
+  const container = document.getElementById('learnVideoResults');
+  container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><div class="empty-state-text">搜索中...</div></div>';
+  try {
+    const resp = await fetch('https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword='+encodeURIComponent(q+' 健身')+'&page=1');
+    const data = await resp.json();
+    if (data.code === 0 && data.data.result) {
+      const videos = data.data.result.slice(0, 6);
+      container.innerHTML = videos.map(v => '<div class="video-card" onclick="showVideoModal(\''+v.title.replace(/'/g,"\\'")+'\', \''+v.bvid+'\')"><div class="video-thumb" style="background-image:url('+v.pic.replace('http:','https:')+');background-size:cover;background-position:center"></div><div class="video-info"><div class="video-title">'+v.title+'</div><div class="video-meta">👁 '+(v.play/10000).toFixed(1)+'万 · '+v.author+'</div></div></div>').join('');
+      if (videos.length === 0) container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-text">未找到相关视频</div></div>';
+    } else {
+      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">搜索失败，请重试</div></div>';
+    }
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><div class="empty-state-text">网络错误，请检查连接</div></div>';
+  }
+}
+
+// ==================== 5. EXPENSE ====================
+function getExpenses() { return STORE.get('expenses', []); }
+
+function initExpense() {
+  document.getElementById('expenseDate').value = today();
+  const y = STORE.get('expenseCalendar_year', new Date().getFullYear());
+  const m = STORE.get('expenseCalendar_month', new Date().getMonth());
+  const selDate = STORE.get('expenseCalendar_sel', today());
+  document.getElementById('expenseDetailDate').textContent = selDate;
+  renderCalendar('expenseCalendar', y, m, onExpenseDateSelect, ds => getExpenses().some(e => e.date === ds));
+  renderExpenseStats(); renderExpenseDetail(selDate);
+}
+
+function onExpenseDateSelect(ds) {
+  document.getElementById('expenseDetailDate').textContent = ds;
+  renderExpenseDetail(ds);
+}
+
+function recordExpense() {
+  const record = {
+    date: document.getElementById('expenseDate').value || today(),
+    item: document.getElementById('expenseItem').value.trim(),
+    amount: Number(document.getElementById('expenseAmount').value) || 0,
+    category: document.getElementById('expenseCategory').value
+  };
+  if (!record.item || record.amount <= 0) return toast('请完整填写消费信息');
+  const expenses = getExpenses();
+  expenses.push(record); STORE.set('expenses', expenses);
+  document.getElementById('expenseItem').value = ''; document.getElementById('expenseAmount').value = '';
+  initExpense(); toast('💰 消费记录已保存');
+}
+
+function renderExpenseStats() {
+  const expenses = getExpenses();
+  const now = new Date();
+  const thisMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const thisYear = now.getFullYear();
+  const monthTotal = expenses.filter(e => e.date.startsWith(thisMonth)).reduce((s,e) => s+e.amount, 0);
+  const yearTotal = expenses.filter(e => e.date.startsWith(String(thisYear))).reduce((s,e) => s+e.amount, 0);
+  const fitnessTotal = expenses.filter(e => e.category === 'fitness').reduce((s,e) => s+e.amount, 0);
+  const dailyTotal = expenses.filter(e => e.category === 'daily').reduce((s,e) => s+e.amount, 0);
+
+  document.getElementById('expenseStats').innerHTML =
+    '<div class="stat-card teal-bg"><div class="stat-value">'+fmtMoney(monthTotal)+'</div><div class="stat-label">本月总支出</div></div>'+
+    '<div class="stat-card orange-bg"><div class="stat-value">'+fmtMoney(yearTotal)+'</div><div class="stat-label">年度累计支出</div></div>'+
+    '<div style="display:grid;gap:10px"><div class="stat-card pink-bg" style="padding:12px"><div class="stat-value" style="font-size:20px">'+fmtMoney(fitnessTotal)+'</div><div class="stat-label">健身专项支出</div></div><div class="stat-card green-bg" style="padding:12px"><div class="stat-value" style="font-size:20px">'+fmtMoney(dailyTotal)+'</div><div class="stat-label">日常生活支出</div></div></div>';
+}
+
+function renderExpenseDetail(ds) {
+  const expenses = getExpenses();
+  const dayExpenses = expenses.filter(e => e.date === ds);
+  const container = document.getElementById('expenseDetailTable');
+  if (dayExpenses.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💳</div><div class="empty-state-text">当日暂无消费记录</div></div>';
+    return;
+  }
+  const total = dayExpenses.reduce((s,e) => s+e.amount, 0);
+  container.innerHTML = '<div style="margin-bottom:8px;font-weight:600">当日合计: <span style="color:var(--dopa-teal)">'+fmtMoney(total)+'</span></div><table><thead><tr><th>消费项目</th><th>金额</th><th>分类</th><th>操作</th></tr></thead><tbody>'+dayExpenses.map((e,i) => {
+    const globalIdx = expenses.indexOf(e);
+    return '<tr><td>'+e.item+'</td><td><strong>'+fmtMoney(e.amount)+'</strong></td><td><span class="tag '+(e.category==='fitness'?'tag-fitness':'tag-daily')+'">'+(e.category==='fitness'?'健身专项':'日常生活')+'</span></td><td><button class="btn btn-xs btn-outline" onclick="deleteExpense('+globalIdx+')">删除</button></td></tr>';
+  }).join('')+'</tbody></table>';
+}
+
+function deleteExpense(idx) {
+  const expenses = getExpenses();
+  expenses.splice(idx, 1); STORE.set('expenses', expenses);
+  initExpense(); toast('已删除消费记录');
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  // 初始激活态样式
+  const activeNav = document.querySelector('.nav-item.active');
+  if (activeNav) {
+    activeNav.style.background = COLORS.checkin;
+    activeNav.style.color = 'white';
+    activeNav.style.boxShadow = '0 4px 14px rgba(255,107,138,0.35)';
+  }
+  initCheckin();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.activeElement === document.getElementById('newCheckinItem')) addCheckinItem();
+    if (document.activeElement === document.getElementById('exerciseSearch')) searchExercise();
+    if (document.activeElement === document.getElementById('learnSearch')) searchLearnVideo();
+    if (document.activeElement === document.getElementById('newLearnTopic')) addLearnTopic();
+  }
+  if (e.key === 'Escape') closeVideoModal();
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

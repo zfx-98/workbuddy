@@ -1,0 +1,22 @@
+{
+  "name": "小张的工作台",
+  "short_name": "小张工作台",
+  "description": "小张的健身生活工作台 - 每日打卡、饮食搭配、健身运动、健身学习、日常花销",
+  "start_url": "/workbuddy/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF5F8",
+  "theme_color": "#FF6B8A",
+  "icons": [
+    {
+      "src": "/workbuddy/workbuddy-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/workbuddy/workbuddy-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
